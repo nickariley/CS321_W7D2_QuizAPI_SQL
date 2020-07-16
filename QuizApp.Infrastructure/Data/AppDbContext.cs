@@ -11,12 +11,19 @@ namespace QuizApp.Infrastructure.Data
         public DbSet<Quiz> Quizzes { get; set; }
         public DbSet<Question> Questions { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
 
             optionsBuilder.UseSqlite("Data Source=./quizapp.db");
+        }*/
+
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+
         }
+
+        #region OnModelCreating Method
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -27,7 +34,7 @@ namespace QuizApp.Infrastructure.Data
 
             SetupSeedData(builder);
         }
-
+        #endregion
 
         private void SetupSeedData(ModelBuilder modelBuilder)
         {
@@ -95,7 +102,7 @@ public interface Foo
 ]
 ```
 ",
-                });
+                    });
 
             modelBuilder.Entity<QuizQuestion>().HasData(
                 new QuizQuestion

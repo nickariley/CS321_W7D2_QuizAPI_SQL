@@ -29,7 +29,22 @@ namespace QuizApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<AppDbContext>();
+            //services.AddDbContext<AppDbContext>();
+
+            // Use SQL Database if in Azure, otherwise, use SQLite
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+                services.AddDbContext<AppDbContext>(options =>
+                        options.UseSqlServer(Configuration.GetConnectionString("QuizDbConnection")));
+            else
+                services.AddDbContext<AppDbContext>(options =>
+                        options.UseSqlite("Data Source=quizapp.db"));
+
+            // Automatically perform database migration
+            /*In the next line after If statement, it will run the database migrations to make sure that the database has all of the 
+            appropriate tables. So the first time we run our API in Azure, it will create the necessary tables and add the seed data.*/
+            services.BuildServiceProvider().GetService<AppDbContext>().Database.Migrate();
+
+
 
             services.AddScoped<IQuestionRepository, QuestionRepository>();
             services.AddScoped<IQuestionService, QuestionService>();
